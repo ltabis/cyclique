@@ -9,7 +9,10 @@ edition = "2021"
 # TODO: reverse the dynamic feature before releasing.
 bevy = { version = "0.8.1", features = ["dynamic"] }
 
-# Bevy stuff.
+# TODO: dev dependency.
+bevy-inspector-egui = "0.12.1"
+
+# Bevy optimisation stuff.
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]
