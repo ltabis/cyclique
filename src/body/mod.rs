@@ -11,6 +11,7 @@ impl Plugin for BodyPlugin {
         app.add_startup_system(systems::setup)
             .add_event::<event::Event>()
             .add_system(systems::update)
-            .add_system(systems::new_body);
+            .add_system(systems::new_body)
+            .add_system(systems::camera_controller);
     }
 }

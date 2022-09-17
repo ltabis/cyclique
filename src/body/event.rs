@@ -1,3 +1,6 @@
+use bevy::prelude::*;
+
 pub enum Event {
-    Click,
+    NewBody,
+    Move(KeyCode),
 }
