@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use super::{components::Body, event::Event};
 
-pub fn setup(mut commands: Commands) {}
+pub fn setup(_: Commands) {}
 
 pub fn update(keyboard_input: Res<Input<KeyCode>>, mut events: EventWriter<Event>) {
     if keyboard_input.just_pressed(KeyCode::A) {
@@ -24,11 +24,10 @@ pub fn new_body(
                 commands
                     .spawn_bundle(PbrBundle {
                         mesh: meshes.add(Mesh::from(shape::Icosphere {
-                            radius: 5.0,
+                            radius: 1.0,
                             subdivisions: 30,
                         })),
                         material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-                        transform: Transform::from_xyz(0.0, 0.0, 0.0),
                         ..default()
                     })
                     .insert(Body);
