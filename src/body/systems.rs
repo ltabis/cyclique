@@ -47,28 +47,39 @@ pub fn new_body(
     }
 }
 
-const CAMERA_SPEED: f32 = 5.0;
+// const CAMERA_SPEED: f32 = 5.0;
 
-/// Control the camera using the keyboard.
-pub fn camera_controller(
-    mut camera: Query<&mut Transform, With<Camera>>,
-    mut events: EventReader<Event>,
-    time: Res<Time>,
-) {
-    for event in events.iter() {
-        match event {
-            Event::Move(key) => {
-                let mut camera = camera.iter_mut().next().expect("No camera has been setup");
-
-                match key {
-                    KeyCode::Up => camera.translation.y += CAMERA_SPEED * time.delta_seconds(),
-                    KeyCode::Down => camera.translation.y -= CAMERA_SPEED * time.delta_seconds(),
-                    KeyCode::Right => camera.translation.x += CAMERA_SPEED * time.delta_seconds(),
-                    KeyCode::Left => camera.translation.x -= CAMERA_SPEED * time.delta_seconds(),
-                    _ => {}
-                }
-            }
-            _ => {}
-        }
-    }
-}
+// TODO: re-invent the wheel by coding your own camera controller.
+// /// Control the camera using the keyboard.
+// ///
+// #[bevy::utils::tracing::instrument(skip_all)]
+// pub fn camera_controller(
+//     mut camera: Query<&mut Transform, With<Camera>>,
+//     mut events: EventReader<Event>,
+//     time: Res<Time>,
+// ) {
+//     for event in events.iter() {
+//         match event {
+//             Event::Move(key) => {
+//                 if let Some(mut camera) = camera.iter_mut().next() {
+//                     match key {
+//                         KeyCode::Up => camera.translation.z += CAMERA_SPEED * time.delta_seconds(),
+//                         KeyCode::Down => {
+//                             camera.translation.z -= CAMERA_SPEED * time.delta_seconds()
+//                         }
+//                         KeyCode::Right => {
+//                             camera.translation.x += CAMERA_SPEED * time.delta_seconds()
+//                         }
+//                         KeyCode::Left => {
+//                             camera.translation.x -= CAMERA_SPEED * time.delta_seconds()
+//                         }
+//                         _ => {}
+//                     }
+//                 } else {
+//                     error!("no camera found.");
+//                 }
+//             }
+//             _ => {}
+//         }
+//     }
+// }
