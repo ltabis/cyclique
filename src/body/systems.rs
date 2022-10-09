@@ -21,7 +21,10 @@ pub fn setup(
                 material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
                 ..default()
             })
-            .insert(Body { mass: 50.0 })
+            .insert(Body {
+                mass: 50.0,
+                fixed: true,
+            })
             .insert(Velocity::default())
             .commands()
             .spawn_bundle(PbrBundle {
@@ -33,8 +36,11 @@ pub fn setup(
                 transform: Transform::from_xyz(5.0, 5.0, 5.0),
                 ..default()
             })
-            .insert(Body { mass: 5.0 })
-            .insert(Velocity::default());
+            .insert(Body {
+                mass: 5.0,
+                fixed: false,
+            })
+            .insert(Velocity(Vec3::new(0.1, 0.0, 0.0)));
     }
 }
 
@@ -51,17 +57,23 @@ pub fn update_bodies_velocity(
         return;
     }
 
-    for body in &bodies {
+    for entity in &bodies {
         let mut acceleration = Vec3::default();
 
-        debug!("Updating body {:?}", body);
+        let (body, transform) = characteristics.get(entity).unwrap();
+
+        if body.fixed {
+            debug!("Body {entity:?} is fixed, not updating.");
+            continue;
+        }
+
+        debug!("Updating body {entity:?}");
 
         for other in &bodies {
-            if body == other {
+            if entity == other {
                 continue;
             }
 
-            let (body, transform) = characteristics.get(body).unwrap();
             let (other, other_transform) = characteristics.get(other).unwrap();
 
             let diff = other_transform.translation - transform.translation;
@@ -76,7 +88,7 @@ pub fn update_bodies_velocity(
 
         // updating the current body's velocity.
         if let Err(error) = velocities
-            .get_mut(body)
+            .get_mut(entity)
             .map(|mut velocity| velocity.0 += acceleration * time.delta_seconds())
         {
             error!("Failed to update velocity: {}", error);
@@ -140,7 +152,10 @@ pub fn new_body(
                         material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
                         ..default()
                     })
-                    .insert(Body { mass: 5.0 });
+                    .insert(Body {
+                        mass: 5.0,
+                        fixed: false,
+                    });
             }
             _ => (),
         }
