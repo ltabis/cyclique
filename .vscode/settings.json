@@ -4,6 +4,7 @@
     "Icosphere",
     "inspectable",
     "Inspectable",
+    "powf",
     "winit",
     "Winit"
   ]
