@@ -15,7 +15,7 @@ pub fn call_orbit_visualizer(
     mut materials: ResMut<Assets<LineMaterial>>,
 
     bodies: Query<Entity, With<Body>>,
-    q_body: Query<(&Body, &Transform, &Velocity)>,
+    q_body: Query<(&Body, &Transform, &mut Velocity)>,
 ) {
     for body in &bodies {
         visualize.as_mut().simulate_orbits(

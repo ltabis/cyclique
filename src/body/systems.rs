@@ -50,8 +50,7 @@ pub fn update_bodies_velocity(
     time: Res<Time>,
     state: Res<super::state::State>,
     bodies: Query<Entity, With<Body>>,
-    q_body: Query<(&Body, &Transform, &Velocity)>,
-    mut velocities: Query<&mut Velocity, With<Body>>,
+    mut q_body: Query<(&Body, &Transform, &mut Velocity)>,
 ) {
     if state.paused {
         return;
@@ -61,7 +60,7 @@ pub fn update_bodies_velocity(
         let body = if let Ok((body, _, _)) = q_body.get(entity) {
             body
         } else {
-            error!("celestial body does not contain Boyd and/or Transform components");
+            error!("celestial body does not contain Body / Transform / Velocity components");
             continue;
         };
 
@@ -73,13 +72,13 @@ pub fn update_bodies_velocity(
         let acceleration = compute_acceleration(&entity, &bodies, &q_body);
         debug!("Acceleration: {:?}", acceleration);
 
-        // updating the current body's velocity.
-        if let Err(error) = velocities
-            .get_mut(entity)
-            .map(|mut velocity| velocity.0 += acceleration * time.delta_seconds())
-        {
-            error!("Failed to update velocity: {}", error);
-        }
+        if let Ok((_, _, mut velocity)) = q_body.get_mut(entity) {
+            // updating the current body's velocity.
+            velocity.0 += acceleration * time.delta_seconds();
+        } else {
+            error!("celestial body does not contain Body / Transform / Velocity components");
+            continue;
+        };
     }
 }
 

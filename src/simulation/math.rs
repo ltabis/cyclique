@@ -15,7 +15,7 @@ const GRAVITATIONAL_CONSTANT: f32 = 1.0;
 pub fn compute_acceleration(
     entity: &Entity,
     others: &Query<Entity, With<Body>>,
-    q_body: &Query<(&Body, &Transform, &Velocity)>,
+    q_body: &Query<(&Body, &Transform, &mut Velocity)>,
 ) -> Vec3 {
     let mut acceleration = Vec3::default();
 

@@ -55,7 +55,7 @@ impl OrbitVisualizer {
 
         entity: &Entity,
         others: &Query<Entity, With<Body>>,
-        q_body: &Query<(&Body, &Transform, &Velocity)>,
+        q_body: &Query<(&Body, &Transform, &mut Velocity)>,
     ) {
         if self.done {
             return;

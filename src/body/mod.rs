@@ -10,6 +10,9 @@ pub struct BodyPlugin;
 impl Plugin for BodyPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(systems::setup)
+            .add_plugin(MaterialPlugin::<
+                crate::simulation::orbit_visualizer::lines::LineMaterial,
+            >::default())
             .add_event::<event::Event>()
             .init_resource::<state::State>()
             .init_resource::<crate::simulation::orbit_visualizer::OrbitVisualizer>()
