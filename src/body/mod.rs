@@ -1,4 +1,4 @@
-mod components;
+pub mod components;
 mod event;
 mod state;
 mod systems;
@@ -12,9 +12,11 @@ impl Plugin for BodyPlugin {
         app.add_startup_system(systems::setup)
             .add_event::<event::Event>()
             .init_resource::<state::State>()
+            .init_resource::<crate::simulation::orbit_visualizer::OrbitVisualizer>()
             .add_system(systems::update)
             .add_system(systems::new_body)
             .add_system(systems::update_bodies_velocity)
-            .add_system(systems::update_bodies_position);
+            .add_system(systems::update_bodies_position)
+            .add_system(crate::simulation::call_orbit_visualizer);
     }
 }

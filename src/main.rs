@@ -1,4 +1,5 @@
 mod body;
+mod simulation;
 
 use bevy::prelude::*;
 use body::BodyPlugin;

@@ -8,5 +8,5 @@ pub struct Body {
     pub fixed: bool,
 }
 
-#[derive(Component, Default)]
+#[derive(Component, Default, Clone, Copy)]
 pub struct Velocity(pub Vec3);

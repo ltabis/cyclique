@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::simulation::math::compute_acceleration;
+
 use super::{
     components::{Body, Velocity},
     event::Event,
@@ -44,13 +46,11 @@ pub fn setup(
     }
 }
 
-const GRAVITATIONAL_CONSTANT: f32 = 1.0;
-
 pub fn update_bodies_velocity(
     time: Res<Time>,
     state: Res<super::state::State>,
     bodies: Query<Entity, With<Body>>,
-    characteristics: Query<(&Body, &Transform)>,
+    q_body: Query<(&Body, &Transform, &Velocity)>,
     mut velocities: Query<&mut Velocity, With<Body>>,
 ) {
     if state.paused {
@@ -58,32 +58,19 @@ pub fn update_bodies_velocity(
     }
 
     for entity in &bodies {
-        let mut acceleration = Vec3::default();
-
-        let (body, transform) = characteristics.get(entity).unwrap();
+        let body = if let Ok((body, _, _)) = q_body.get(entity) {
+            body
+        } else {
+            error!("celestial body does not contain Boyd and/or Transform components");
+            continue;
+        };
 
         if body.fixed {
             debug!("Body {entity:?} is fixed, not updating.");
             continue;
         }
 
-        debug!("Updating body {entity:?}");
-
-        for other in &bodies {
-            if entity == other {
-                continue;
-            }
-
-            let (other, other_transform) = characteristics.get(other).unwrap();
-
-            let diff = other_transform.translation - transform.translation;
-            let sqr_dist = diff.length().powf(2.0);
-            let force_dir = diff.normalize();
-            let force = force_dir * GRAVITATIONAL_CONSTANT * body.mass * other.mass / sqr_dist;
-
-            acceleration += force / body.mass;
-        }
-
+        let acceleration = compute_acceleration(&entity, &bodies, &q_body);
         debug!("Acceleration: {:?}", acceleration);
 
         // updating the current body's velocity.
