@@ -42,7 +42,7 @@ pub fn setup(
                 mass: 5.0,
                 fixed: false,
             })
-            .insert(Velocity(Vec3::new(0.1, 0.0, 0.0)));
+            .insert(Velocity(Vec3::new(0.3, 0.0, 0.0)));
     }
 }
 

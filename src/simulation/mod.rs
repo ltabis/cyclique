@@ -5,9 +5,9 @@ use bevy::prelude::*;
 
 use crate::body::components::{Body, Velocity};
 
-use self::orbit_visualizer::lines::LineMaterial;
+use self::orbit_visualizer::lines::{LineMaterial, LineStrip};
 
-pub fn call_orbit_visualizer(
+pub fn display_orbits(
     mut visualize: ResMut<orbit_visualizer::OrbitVisualizer>,
 
     mut commands: Commands,
@@ -18,13 +18,14 @@ pub fn call_orbit_visualizer(
     q_body: Query<(&Body, &Transform, &mut Velocity)>,
 ) {
     for body in &bodies {
-        visualize.as_mut().simulate_orbits(
-            &mut commands,
-            &mut meshes,
-            &mut materials,
-            &body,
-            &bodies,
-            &q_body,
-        )
+        if let Some(points) = visualize.as_mut().simulate_orbits(&body, &bodies, &q_body) {
+            // Render the orbit using line strips.
+            commands.spawn().insert_bundle(MaterialMeshBundle {
+                mesh: meshes.add(Mesh::from(LineStrip { points })),
+                transform: Transform::from_xyz(0.5, 0.0, 0.0),
+                material: materials.add(LineMaterial { color: Color::RED }),
+                ..default()
+            });
+        }
     }
 }

@@ -20,6 +20,6 @@ impl Plugin for BodyPlugin {
             .add_system(systems::new_body)
             .add_system(systems::update_bodies_velocity)
             .add_system(systems::update_bodies_position)
-            .add_system(crate::simulation::call_orbit_visualizer);
+            .add_system(crate::simulation::display_orbits);
     }
 }

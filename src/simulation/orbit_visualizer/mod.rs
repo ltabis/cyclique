@@ -2,12 +2,7 @@ pub mod lines;
 
 use bevy::prelude::*;
 
-use crate::{
-    body::components::{Body, Velocity},
-    simulation::orbit_visualizer::lines::LineStrip,
-};
-
-use self::lines::LineMaterial;
+use crate::body::components::{Body, Velocity};
 
 use super::math::compute_acceleration;
 
@@ -16,7 +11,7 @@ pub struct OrbitVisualizer {
     /// Number of steps to compute to predict the orbit of an object.
     iterations: usize,
     /// As the simulation been completed.
-    done: bool,
+    done: std::collections::HashSet<Entity>,
 }
 
 impl Default for OrbitVisualizer {
@@ -33,32 +28,21 @@ impl OrbitVisualizer {
     pub fn new(iterations: usize) -> Self {
         Self {
             iterations,
-            done: false,
+            done: std::collections::HashSet::new(),
         }
     }
 
-    /// Set the number of iterations to make.
-    pub fn set_iteration(&mut self, iterations: usize) {
-        self.iterations = iterations;
-    }
-
-    // NOTE: should drawing the points be split into another function ?
     /// Simulate bodies orbits using [`Self::iterations`].
     ///
     /// Each simulation creates [`Self::iterations`] lines.
     pub fn simulate_orbits(
         &mut self,
-
-        commands: &mut Commands,
-        meshes: &mut ResMut<Assets<Mesh>>,
-        materials: &mut ResMut<Assets<LineMaterial>>,
-
         entity: &Entity,
         others: &Query<Entity, With<Body>>,
         q_body: &Query<(&Body, &Transform, &mut Velocity)>,
-    ) {
-        if self.done {
-            return;
+    ) -> Option<Vec<Vec3>> {
+        if self.done.contains(entity) {
+            return None;
         }
 
         let (_, transform, velocity) = q_body
@@ -82,14 +66,8 @@ impl OrbitVisualizer {
             points.push(transform.translation);
         }
 
-        // Spawn a line strip that goes from point to point.
-        commands.spawn().insert_bundle(MaterialMeshBundle {
-            mesh: meshes.add(Mesh::from(LineStrip { points })),
-            transform: Transform::from_xyz(0.5, 0.0, 0.0),
-            material: materials.add(LineMaterial { color: Color::BLUE }),
-            ..default()
-        });
+        self.done.insert(entity.clone());
 
-        self.done = true;
+        Some(points)
     }
 }
