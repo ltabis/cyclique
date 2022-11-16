@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct Body {
     /// The mass of the object.
     pub mass: f32,
@@ -8,5 +8,5 @@ pub struct Body {
     pub fixed: bool,
 }
 
-#[derive(Component, Default, Clone, Copy)]
+#[derive(Component, Default, Clone, Copy, Debug)]
 pub struct Velocity(pub Vec3);

@@ -11,7 +11,7 @@ bevy = { version = "0.8.1", features = ["dynamic", "trace"] }
 smooth-bevy-cameras = "0.5.0"
 
 # TODO: dev dependency.
-bevy-inspector-egui = "0.12.1"
+bevy-inspector-egui = "0.13.0"
 
 # Bevy optimisation stuff.
 
