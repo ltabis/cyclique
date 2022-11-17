@@ -40,8 +40,16 @@ pub fn simulate_orbits(
         })
         .collect();
 
-    let mut new_lines: std::collections::HashMap<Entity, Vec<_>> =
-        lines.iter().map(|(entity, _)| (entity, vec![])).collect();
+    let mut new_lines: std::collections::HashMap<Entity, Vec<_>> = to_update
+        .iter()
+        .map(|(entity, orbit)| {
+            let (line_entity, _) = lines.get(orbit.lines).unwrap();
+            let (_, _, transform, _) = q_body.get(entity).unwrap();
+
+            // Adding the initial point to the list of orbit lines to render.
+            (line_entity, vec![transform.translation])
+        })
+        .collect();
 
     info!("entities.len: {}", entities.len());
 
