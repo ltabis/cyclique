@@ -5,19 +5,17 @@ use crate::{
     simulation::{math::compute_acceleration, orbit_visualizer::lines::LineStrip},
 };
 
-use super::{lines::LineMaterial, OrbitLines, OrbitVisualizer};
+use super::{OrbitLines, OrbitVisualizer};
 
 /// Simulate bodies orbits for [`Self::iterations`] iterations.
 ///
 /// Each simulation creates [`Self::iterations`] lines.
 pub fn simulate_orbits(
     state: Res<crate::body::state::State>,
-    mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<LineMaterial>>,
 
     mut to_update: Query<(Entity, &mut OrbitVisualizer)>,
-    mut lines: Query<(Entity, &mut Handle<Mesh>), With<OrbitLines>>,
+    lines: Query<(Entity, &mut Handle<Mesh>), With<OrbitLines>>,
     q_body: Query<(Entity, &Body, &Transform, &Velocity)>,
 ) {
     if !state.paused {
@@ -71,7 +69,7 @@ pub fn simulate_orbits(
             velocity.0 += acceleration;
             transform.translation += velocity.0;
 
-            if let Ok((_, mut orbit)) = to_update.get_mut(entity) {
+            if let Ok((_, orbit)) = to_update.get_mut(entity) {
                 if iteration < orbit.iterations {
                     new_lines
                         .get_mut(&orbit.lines)

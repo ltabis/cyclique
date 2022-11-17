@@ -2,12 +2,12 @@ pub mod lines;
 pub mod systems;
 
 use bevy::prelude::*;
+use bevy_inspector_egui::Inspectable;
 
 use self::lines::{LineMaterial, LineStrip};
 
 /// Contain orbit metadata with lines to debug a body's orbit.
-#[derive(Reflect, Component)]
-#[reflect(Component)]
+#[derive(Component, Inspectable)]
 pub struct OrbitVisualizer {
     /// Number of steps to compute to predict the orbit of an object.
     pub iterations: usize,

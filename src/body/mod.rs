@@ -4,6 +4,7 @@ pub mod state;
 mod systems;
 
 use bevy::prelude::*;
+use bevy_inspector_egui::RegisterInspectable;
 
 use crate::simulation::orbit_visualizer::{lines::LineMaterial, OrbitVisualizer};
 
@@ -17,13 +18,15 @@ impl Plugin for BodyPlugin {
             .add_plugin(MaterialPlugin::<
                 crate::simulation::orbit_visualizer::lines::LineMaterial,
             >::default())
+            .register_inspectable::<OrbitVisualizer>()
+            .register_inspectable::<Velocity>()
+            .register_inspectable::<Body>()
             .add_event::<event::Event>()
             .init_resource::<state::State>()
             .add_system(event::update)
             .add_system(systems::new_body)
             .add_system(systems::update_bodies)
-            .add_system(crate::simulation::orbit_visualizer::systems::simulate_orbits)
-            .register_type::<OrbitVisualizer>();
+            .add_system(crate::simulation::orbit_visualizer::systems::simulate_orbits);
     }
 }
 
