@@ -26,12 +26,10 @@ pub fn update_bodies(
         return;
     }
 
-    let accelerations_for_one_step = compute_single_step_world_accelerations(&q_body);
-
-    for result in &accelerations_for_one_step {
-        if let Ok((_, _, mut transform, mut velocity)) = q_body.get_mut(result.0) {
+    for (entity, acceleration) in compute_single_step_world_accelerations(&q_body) {
+        if let Ok((_, _, mut transform, mut velocity)) = q_body.get_mut(entity) {
             // updating the current body's velocity.
-            velocity.0 += result.1 * time.delta_seconds();
+            velocity.0 += acceleration * time.delta_seconds();
             transform.translation += velocity.0;
         } else {
             error!("celestial body does not contain Body / Transform / Velocity components");

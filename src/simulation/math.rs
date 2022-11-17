@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::body::components::{Body, Velocity};
 
 ///
-const GRAVITATIONAL_CONSTANT: f32 = 6.67e-11;
+const GRAVITATIONAL_CONSTANT: f32 = 0.0001;
 
 /// Compute accelerations of all provided bodies for a single step.
 pub fn compute_single_step_world_accelerations(
@@ -17,9 +17,7 @@ pub fn compute_single_step_world_accelerations(
             continue;
         }
 
-        let acceleration = compute_all_accelerations(&entity, &q_body);
-
-        accelerations.push((entity, acceleration));
+        accelerations.push((entity, compute_all_accelerations(&entity, &q_body)));
     }
 
     accelerations
@@ -68,5 +66,5 @@ pub fn compute_acceleration(
     let force_dir = diff.normalize();
     let force = force_dir * GRAVITATIONAL_CONSTANT * body.mass * other_body.mass / sqr_dist;
 
-    force / body.mass
+    force / body.mass // body.mass cancels out, it's just here for clarity.
 }

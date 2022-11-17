@@ -57,6 +57,10 @@ pub fn simulate_orbits(
         let mut accelerations = Vec::with_capacity(entities.len());
 
         for (entity, body, transform, _) in &q_body {
+            if body.fixed {
+                continue;
+            }
+
             let mut acceleration = Vec3::default();
 
             for (other, o_body, o_transform, _) in &q_body {
