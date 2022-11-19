@@ -17,7 +17,8 @@ struct CelestialBodyQuery {
 }
 
 pub fn update_bodies(
-    time: Res<Time>,
+    _: Res<Time>,
+
     state: Res<super::state::State>,
     mut q_body: Query<(Entity, &Body, &mut Transform, &mut Velocity)>,
 ) {
@@ -32,7 +33,9 @@ pub fn update_bodies(
     for (entity, acceleration) in accelerations {
         let (_, _, mut transform, mut velocity) = q_body.get_mut(entity).unwrap();
 
-        velocity.0 += acceleration * time.delta_seconds();
+        // NOTE: should be `velocity.0 += acceleration * time.delta_seconds();` but results
+        //       do not match the orbit visualizer because of the slight variation of values.
+        velocity.0 += acceleration;
         transform.translation += velocity.0;
     }
 }

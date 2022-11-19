@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::body::components::{Body, Velocity};
 
 ///
-const GRAVITATIONAL_CONSTANT: f32 = 0.0001;
+const GRAVITATIONAL_CONSTANT: f32 = 0.00001;
 
 /// Compute accelerations of all provided bodies for a single step.
 pub fn compute_single_step_world_accelerations(
