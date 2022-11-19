@@ -14,7 +14,7 @@ pub fn simulate_orbits(
     state: Res<crate::body::state::State>,
     mut meshes: ResMut<Assets<Mesh>>,
 
-    mut to_update: Query<(Entity, &mut OrbitVisualizer)>,
+    mut orbits: Query<(Entity, &mut OrbitVisualizer)>,
     lines: Query<(Entity, &mut Handle<Mesh>), With<OrbitLines>>,
     q_body: Query<(Entity, &Body, &Transform, &Velocity)>,
 ) {
@@ -22,9 +22,7 @@ pub fn simulate_orbits(
         return;
     }
 
-    info!("starting simulation");
-
-    let max_iterations = to_update.iter().fold(0, |acc, (_, orbit)| {
+    let max_iterations = orbits.iter().fold(0, |acc, (_, orbit)| {
         if orbit.iterations > acc {
             orbit.iterations
         } else {
@@ -33,14 +31,14 @@ pub fn simulate_orbits(
     });
 
     // FIXME: Constant allocs, to refactor.
-    let mut entities: std::collections::HashMap<Entity, (_, _, _)> = q_body
+    let mut tmp: std::collections::HashMap<Entity, (_, _, _)> = q_body
         .iter()
         .map(|(entity, body, transform, velocity)| {
             (entity, (body, transform.clone(), velocity.clone()))
         })
         .collect();
 
-    let mut new_lines: std::collections::HashMap<Entity, Vec<_>> = to_update
+    let mut new_lines: std::collections::HashMap<Entity, Vec<_>> = orbits
         .iter()
         .map(|(entity, orbit)| {
             let (line_entity, _) = lines.get(orbit.lines).unwrap();
@@ -51,37 +49,40 @@ pub fn simulate_orbits(
         })
         .collect();
 
-    info!("entities.len: {}", entities.len());
-
     for iteration in 0..max_iterations {
-        let mut accelerations = Vec::with_capacity(entities.len());
+        // FIXME: move this one block up & clear each iteration to reduce allocations.
+        let mut accelerations = Vec::with_capacity(tmp.len());
 
-        for (entity, body, transform, _) in &q_body {
-            if body.fixed {
-                continue;
-            }
+        {
+            let tmp = &tmp;
 
-            let mut acceleration = Vec3::default();
-
-            for (other, o_body, o_transform, _) in &q_body {
-                if entity == other {
+            for (entity, (body, transform, _)) in tmp {
+                if body.fixed {
                     continue;
                 }
 
-                acceleration += compute_acceleration(body, transform, o_body, o_transform);
-            }
+                let mut acceleration = Vec3::default();
 
-            accelerations.push((entity, acceleration));
+                for (other, (o_body, o_transform, _)) in tmp {
+                    if entity == other {
+                        continue;
+                    }
+
+                    acceleration += compute_acceleration(body, transform, o_body, o_transform);
+                }
+
+                accelerations.push((*entity, acceleration));
+            }
         }
 
         // Update orbits with current velocities.
         for (entity, acceleration) in accelerations {
-            let (_, transform, velocity) = entities.get_mut(&entity).unwrap();
+            let (_, transform, velocity) = tmp.get_mut(&entity).unwrap();
 
             velocity.0 += acceleration;
             transform.translation += velocity.0;
 
-            if let Ok((_, orbit)) = to_update.get_mut(entity) {
+            if let Ok((_, orbit)) = orbits.get_mut(entity) {
                 if iteration < orbit.iterations {
                     new_lines
                         .get_mut(&orbit.lines)
@@ -92,7 +93,7 @@ pub fn simulate_orbits(
         }
     }
 
-    for (_, orbit) in &to_update {
+    for (_, orbit) in &orbits {
         // Update line strips positions.
         let points = new_lines.get(&orbit.lines).unwrap().clone();
         let (_, mesh) = lines.get(orbit.lines).unwrap();
@@ -100,6 +101,4 @@ pub fn simulate_orbits(
 
         *mesh = Mesh::from(LineStrip { points });
     }
-
-    info!("ending simulation");
 }
