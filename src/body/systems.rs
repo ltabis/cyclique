@@ -1,6 +1,6 @@
 use bevy::{ecs::query::WorldQuery, prelude::*};
 
-use crate::simulation::math::{compute_acceleration, compute_single_step_world_accelerations};
+use crate::simulation::math::compute_single_step_world_accelerations;
 
 use super::{
     components::{Body, Velocity},
@@ -26,31 +26,13 @@ pub fn update_bodies(
         return;
     }
 
-    let mut accelerations = vec![];
-
-    for (entity, body, transform, _) in &q_body {
-        if body.fixed {
-            continue;
-        }
-
-        let mut acceleration = Vec3::default();
-
-        for (other, o_body, o_transform, _) in &q_body {
-            if entity == other {
-                continue;
-            }
-
-            acceleration += compute_acceleration(body, transform, o_body, o_transform);
-        }
-
-        accelerations.push((entity, acceleration));
-    }
+    let accelerations = compute_single_step_world_accelerations(&q_body);
 
     // Update orbits with current velocities.
     for (entity, acceleration) in accelerations {
         let (_, _, mut transform, mut velocity) = q_body.get_mut(entity).unwrap();
 
-        velocity.0 += acceleration;
+        velocity.0 += acceleration * time.delta_seconds();
         transform.translation += velocity.0;
     }
 }
