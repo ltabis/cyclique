@@ -49,10 +49,9 @@ pub fn simulate_orbits(
         })
         .collect();
 
-    for iteration in 0..max_iterations {
-        // FIXME: move this one block up & clear each iteration to reduce allocations.
-        let mut accelerations = Vec::with_capacity(tmp.len());
+    let mut accelerations = Vec::with_capacity(tmp.len());
 
+    for iteration in 0..max_iterations {
         {
             let tmp = &tmp;
 
@@ -76,13 +75,13 @@ pub fn simulate_orbits(
         }
 
         // Update orbits with current velocities.
-        for (entity, acceleration) in accelerations {
+        for (entity, acceleration) in &accelerations {
             let (_, transform, velocity) = tmp.get_mut(&entity).unwrap();
 
-            velocity.0 += acceleration;
+            velocity.0 += *acceleration;
             transform.translation += velocity.0;
 
-            if let Ok((_, orbit)) = orbits.get_mut(entity) {
+            if let Ok((_, orbit)) = orbits.get_mut(*entity) {
                 if iteration < orbit.iterations {
                     new_lines
                         .get_mut(&orbit.lines)
@@ -91,6 +90,8 @@ pub fn simulate_orbits(
                 }
             }
         }
+
+        accelerations.clear();
     }
 
     for (_, orbit) in &orbits {
