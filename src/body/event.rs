@@ -1,12 +1,14 @@
 use bevy::prelude::*;
 
+use super::state::GameState;
+
 pub enum Event {
     NewBody,
     Move(KeyCode),
 }
 
 pub fn update(
-    mut state: ResMut<super::state::State>,
+    mut state: ResMut<State<GameState>>,
     keyboard_input: Res<Input<KeyCode>>,
     mut events: EventWriter<Event>,
 ) {
@@ -23,6 +25,13 @@ pub fn update(
             keyboard_input.get_pressed().next().unwrap().clone(),
         ));
     } else if keyboard_input.just_pressed(KeyCode::Space) {
-        state.paused = !state.paused;
+        if let Some(error) = match state.current() {
+            GameState::Paused => state.set(GameState::Run),
+            GameState::Run => state.set(GameState::Paused),
+        }
+        .err()
+        {
+            error!("{error}");
+        }
     }
 }

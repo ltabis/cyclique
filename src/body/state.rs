@@ -1,13 +1,16 @@
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub enum GameState {
+    Paused,
+    Run,
+}
 
-pub struct State {
-    pub paused: bool,
+pub struct Settings {
     pub debug: bool,
 }
 
-impl Default for State {
+impl Default for Settings {
     fn default() -> Self {
         Self {
-            paused: true,
             debug: cfg!(debug_assertions),
         }
     }

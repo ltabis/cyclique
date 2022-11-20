@@ -19,14 +19,8 @@ struct CelestialBodyQuery {
 pub fn update_bodies(
     _: Res<Time>,
 
-    state: Res<super::state::State>,
     mut q_body: Query<(Entity, &Body, &mut Transform, &mut Velocity)>,
 ) {
-    // TODO: replace state by Bevy Stages: https://docs.rs/bevy/0.8.1/bevy/ecs/prelude/trait.Stage.html
-    if state.paused {
-        return;
-    }
-
     let accelerations = compute_single_step_world_accelerations(&q_body);
 
     // Update orbits with current velocities.

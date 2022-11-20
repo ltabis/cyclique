@@ -11,17 +11,12 @@ use super::{OrbitLines, OrbitVisualizer};
 ///
 /// Each simulation creates [`Self::iterations`] lines.
 pub fn simulate_orbits(
-    state: Res<crate::body::state::State>,
     mut meshes: ResMut<Assets<Mesh>>,
 
     mut orbits: Query<(Entity, &mut OrbitVisualizer)>,
     lines: Query<(Entity, &mut Handle<Mesh>), With<OrbitLines>>,
     q_body: Query<(Entity, &Body, &Transform, &Velocity)>,
 ) {
-    if !state.paused {
-        return;
-    }
-
     let max_iterations = orbits.iter().fold(0, |acc, (_, orbit)| {
         if orbit.iterations > acc {
             orbit.iterations

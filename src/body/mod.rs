@@ -8,7 +8,10 @@ use bevy_inspector_egui::RegisterInspectable;
 
 use crate::simulation::orbit_visualizer::{lines::LineMaterial, OrbitVisualizer};
 
-use self::components::{Body, Velocity};
+use self::{
+    components::{Body, Velocity},
+    state::{GameState, Settings},
+};
 
 pub struct BodyPlugin;
 
@@ -22,11 +25,17 @@ impl Plugin for BodyPlugin {
             .register_inspectable::<Velocity>()
             .register_inspectable::<Body>()
             .add_event::<event::Event>()
-            .init_resource::<state::State>()
+            .add_state(GameState::Paused)
+            .init_resource::<Settings>()
             .add_system(event::update)
             .add_system(systems::new_body)
-            .add_system(systems::update_bodies)
-            .add_system(crate::simulation::orbit_visualizer::systems::simulate_orbits);
+            .add_system_set(
+                SystemSet::on_update(GameState::Run).with_system(systems::update_bodies),
+            )
+            .add_system_set(
+                SystemSet::on_update(GameState::Paused)
+                    .with_system(crate::simulation::orbit_visualizer::systems::simulate_orbits),
+            );
     }
 }
 
