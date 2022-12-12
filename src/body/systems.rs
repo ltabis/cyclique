@@ -2,10 +2,8 @@ use bevy::{ecs::query::WorldQuery, prelude::*};
 
 use crate::simulation::math::compute_single_step_world_accelerations;
 
-use super::{
-    components::{Body, Velocity},
-    event::Event,
-};
+use super::components::{Body, Velocity};
+use crate::events::Event;
 
 #[derive(WorldQuery)]
 #[world_query(derive(Debug))]
@@ -44,7 +42,7 @@ pub fn new_body(
 ) {
     for event in events.iter() {
         match event {
-            Event::NewBody => {
+            Event::NewBody(transform) => {
                 debug!("new body created");
                 commands
                     .spawn_bundle(PbrBundle {
@@ -53,6 +51,7 @@ pub fn new_body(
                             subdivisions: 30,
                         })),
                         material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+                        transform: transform.clone(),
                         ..default()
                     })
                     .insert(Body {

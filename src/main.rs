@@ -1,15 +1,23 @@
 mod body;
+mod controller;
+mod events;
+mod game_state;
+mod settings;
 mod simulation;
 
 use bevy::prelude::*;
-use body::BodyPlugin;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup)
         .add_plugin(bevy_inspector_egui::WorldInspectorPlugin::new())
-        .add_plugin(BodyPlugin {})
+        .add_plugin(body::BodyPlugin {})
+        .add_plugin(controller::ControllerPlugin {})
+        .add_plugin(events::EventPlugin {})
+        .add_plugin(simulation::SimulationPlugin {})
+        .add_plugin(settings::SettingsPlugin {})
+        .add_plugin(game_state::GameStatePlugin {})
         // Camera
         .add_plugin(smooth_bevy_cameras::LookTransformPlugin)
         .add_plugin(smooth_bevy_cameras::controllers::orbit::OrbitCameraPlugin::default())
