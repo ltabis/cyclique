@@ -12,7 +12,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup)
         .add_plugin(bevy_inspector_egui::WorldInspectorPlugin::new())
-        .add_plugin(body::BodyPlugin {})
+        .add_plugin(body::plugin::BodyPlugin {})
         .add_plugin(controller::ControllerPlugin {})
         .add_plugin(events::EventPlugin {})
         .add_plugin(simulation::SimulationPlugin {})

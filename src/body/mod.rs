@@ -1,32 +1,12 @@
 pub mod components;
-mod events;
+mod inputs;
+pub mod plugin;
 mod systems;
 
 use bevy::prelude::*;
-use bevy_inspector_egui::RegisterInspectable;
 
 use self::components::{Body, Velocity};
-use crate::{
-    game_state::GameState,
-    simulation::orbit_visualizer::{lines::LineMaterial, OrbitVisualizer},
-};
-
-pub struct BodyPlugin;
-
-impl Plugin for BodyPlugin {
-    fn build(&self, app: &mut App) {
-        #[cfg(debug_assertions)]
-        app.add_startup_system(setup);
-
-        app.register_inspectable::<Velocity>()
-            .register_inspectable::<Body>()
-            .add_system(events::body_events)
-            .add_system(systems::new_body)
-            .add_system_set(
-                SystemSet::on_update(GameState::Run).with_system(systems::update_bodies),
-            );
-    }
-}
+use crate::simulation::orbit_visualizer::{lines::LineMaterial, OrbitVisualizer};
 
 #[cfg(debug_assertions)]
 pub fn setup(
@@ -69,4 +49,31 @@ pub fn setup(
             .insert(orbit)
             .insert(Velocity(Vec3::new(0.0, 0.0, 0.0)));
     }
+}
+
+fn new_body(
+    position: Vec3,
+    commands: &mut Commands,
+    meshes: &mut ResMut<Assets<Mesh>>,
+    materials: &mut ResMut<Assets<StandardMaterial>>,
+    line_materials: &mut ResMut<Assets<LineMaterial>>,
+) {
+    let orbit = OrbitVisualizer::new(200, commands, meshes, line_materials);
+
+    commands
+        .spawn_bundle(PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Icosphere {
+                radius: 0.5,
+                subdivisions: 30,
+            })),
+            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            transform: Transform::from_translation(position),
+            ..default()
+        })
+        .insert(Body {
+            mass: 5.0,
+            fixed: false,
+        })
+        .insert(orbit)
+        .insert(Velocity(Vec3::new(0.0, 0.0, 0.0)));
 }

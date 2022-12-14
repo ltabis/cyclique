@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
 pub enum Event {
-    NewBody(Transform),
     Move(KeyCode),
 }
 
