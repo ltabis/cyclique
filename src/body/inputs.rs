@@ -8,9 +8,9 @@ pub fn body_inputs(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut line_materials: ResMut<Assets<LineMaterial>>,
-    mouse_input: Res<Input<MouseButton>>,
+    keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if mouse_input.just_pressed(MouseButton::Left) {
+    if keyboard_input.just_pressed(KeyCode::Space) {
         new_body(
             Vec3::ZERO,
             &mut commands,
