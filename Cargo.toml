@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 # TODO: reverse the dynamic feature before releasing.
-bevy = { version = "0.8.1", features = ["dynamic", "trace"] }
+bevy = { version = "0.8.1", features = ["trace", "dynamic"] }
 bevy_mod_picking = "0.9.0"
 bevy-inspector-egui = "0.13.0"
 smooth-bevy-cameras = "0.5.0"

@@ -1,4 +1,2 @@
-# Used to speed up linking speed
-
 [toolchain]
 channel = "nightly"

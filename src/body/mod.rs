@@ -6,7 +6,10 @@ mod systems;
 use bevy::prelude::*;
 
 use self::components::{Body, Velocity};
-use crate::simulation::orbit_visualizer::{lines::LineMaterial, OrbitVisualizer};
+use crate::simulation::orbit_visualizer::{
+    lines::{LineMaterial, LineStrip},
+    OrbitVisualizer,
+};
 
 #[cfg(debug_assertions)]
 pub fn setup(
@@ -52,7 +55,7 @@ pub fn setup(
 }
 
 fn new_body(
-    position: Vec3,
+    transform: Transform,
     commands: &mut Commands,
     meshes: &mut ResMut<Assets<Mesh>>,
     materials: &mut ResMut<Assets<StandardMaterial>>,
@@ -67,7 +70,7 @@ fn new_body(
                 subdivisions: 30,
             })),
             material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-            transform: Transform::from_translation(position),
+            transform,
             ..default()
         })
         .insert(Body {
@@ -75,5 +78,31 @@ fn new_body(
             fixed: false,
         })
         .insert(orbit)
-        .insert(Velocity(Vec3::new(0.0, 0.0, 0.0)));
+        .insert(Velocity(Vec3::new(0.0, 0.0, 0.0)))
+        .insert_bundle(bevy_mod_picking::PickableBundle::default())
+        .add_children(|builder| {
+            builder.spawn().insert_bundle(MaterialMeshBundle {
+                mesh: meshes.add(Mesh::from(LineStrip {
+                    points: vec![Vec3::ZERO, Vec3::new(10., 0., 0.)],
+                })),
+                material: line_materials.add(LineMaterial { color: Color::BLUE }),
+                ..default()
+            });
+            builder.spawn().insert_bundle(MaterialMeshBundle {
+                mesh: meshes.add(Mesh::from(LineStrip {
+                    points: vec![Vec3::ZERO, Vec3::new(0., 10., 0.)],
+                })),
+                material: line_materials.add(LineMaterial { color: Color::RED }),
+                ..default()
+            });
+            builder.spawn().insert_bundle(MaterialMeshBundle {
+                mesh: meshes.add(Mesh::from(LineStrip {
+                    points: vec![Vec3::ZERO, Vec3::new(0., 0., 10.)],
+                })),
+                material: line_materials.add(LineMaterial {
+                    color: Color::GREEN,
+                }),
+                ..default()
+            });
+        });
 }

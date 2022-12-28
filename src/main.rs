@@ -11,6 +11,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup)
+        .add_plugins(bevy_mod_picking::DefaultPickingPlugins)
         .add_plugin(bevy_inspector_egui::WorldInspectorPlugin::new())
         .add_plugin(body::plugin::BodyPlugin {})
         .add_plugin(controller::ControllerPlugin {})
@@ -33,5 +34,6 @@ fn setup(mut commands: Commands) {
                 Vec3::new(-2.0, 5.0, 5.0),
                 Vec3::new(0., 0., 0.),
             ),
-        );
+        )
+        .insert_bundle(bevy_mod_picking::PickingCameraBundle::default());
 }

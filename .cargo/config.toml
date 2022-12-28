@@ -11,3 +11,22 @@ rustflags = ["-Clink-arg=-fuse-ld=lld", "-Zshare-generics=y"]
 # In most cases the gains are negligible, but if you are on macos and have slow compile times you should see significant gains.
 #[profile.dev]
 #debug = 1
+
+# [target.wasm32-unknown-unknown]
+# runner = "wasm-server-runner"
+
+# [profile.wasm-release]
+# # Use release profile as default values
+# inherits = "release"
+
+# # Optimize with size in mind, also try "s", sometimes it is better.
+# # This doesn't increase compilation times compared to -O3, great improvements
+# opt-level = "z"
+
+# # Do a second optimization pass removing duplicate or unused code from dependencies.
+# # Slows compile times, marginal improvements
+# lto = "fat"
+
+# # When building crates, optimize larger chunks at a time
+# # Slows compile times, marginal improvements
+# codegen-units = 1
